@@ -1,22 +1,26 @@
 import { PrimaryKey, Entity, Property } from "@mikro-orm/core";
-import { Field, Int, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 @ObjectType()
 @Entity()
-export class Post {
-  @Field(() => Int)
+export class User {
+  @Field()
   @PrimaryKey()
   id!: number;
 
   @Field()
+  @Property({ type: "text", unique: true })
+  username!: string;
+
+  // no field prop - it will not show on query
   @Property({ type: "text" })
-  title!: string;
+  password!: string;
 
   @Field(() => String)
   @Property({ type: "date" })
   createdAt = new Date();
 
-  @Field(() => String) // no field prop - it will not show on query
+  @Field(() => String)
   @Property({ type: "date", onUpdate: () => new Date() })
   updatedAt = new Date();
 }

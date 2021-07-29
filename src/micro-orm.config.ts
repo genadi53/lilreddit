@@ -3,6 +3,7 @@ import { Post } from "./entities/Post";
 import { MikroORM } from "@mikro-orm/core";
 import path from "path";
 import { PostgreSqlDriver } from "@mikro-orm/postgresql";
+import { User } from "./entities/User";
 
 export default {
   migrations: {
@@ -10,7 +11,7 @@ export default {
     pattern: /^[\w-]+\d+\.[tj]s$/,
   },
   dbName: "lilreddit",
-  entities: [Post],
+  entities: [Post, User],
   driverOptions: PostgreSqlDriver,
   type: "postgresql",
   debug: !__prod__,
