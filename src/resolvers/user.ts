@@ -38,7 +38,7 @@ class UserResponce {
 }
 
 @Resolver()
-export class userResolver {
+export class UserResolver {
   @Mutation(() => UserResponce)
   async register(
     @Arg("options") options: UsernamePasswordInput,
@@ -88,7 +88,7 @@ export class userResolver {
   @Mutation(() => UserResponce)
   async login(
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponce> {
     const user = await em.findOne(User, { username: options.username });
     if (!user) {
@@ -108,6 +108,25 @@ export class userResolver {
           {
             field: "password",
             message: "incorrect password",
+          },
+        ],
+      };
+    }
+
+    req.session!.userId = user.id;
+    return { user };
+  }
+
+  @Mutation(() => UserResponce)
+  async getCurrentUser(@Ctx() { em, req }: MyContext): Promise<UserResponce> {
+    console.log(req.session!.userId);
+    const user = await em.findOne(User, { id: req.session!.userId });
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: "username",
+            message: "that username does not exist",
           },
         ],
       };
