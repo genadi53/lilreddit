@@ -5,6 +5,7 @@ import {
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
 } from "type-graphql";
 import { MyContext } from "src/types";
@@ -23,7 +24,6 @@ class UsernamePasswordInput {
 class FieldError {
   @Field()
   field: string;
-
   @Field()
   message: string;
 }
@@ -85,6 +85,7 @@ export class UserResolver {
     }
     return { user };
   }
+
   @Mutation(() => UserResponce)
   async login(
     @Arg("options") options: UsernamePasswordInput,
@@ -113,24 +114,16 @@ export class UserResolver {
       };
     }
 
-    req.session!.userId = user.id;
+    req.session.userId = user.id;
     return { user };
   }
 
-  @Mutation(() => UserResponce)
-  async getCurrentUser(@Ctx() { em, req }: MyContext): Promise<UserResponce> {
-    console.log(req.session!.userId);
-    const user = await em.findOne(User, { id: req.session!.userId });
-    if (!user) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "that username does not exist",
-          },
-        ],
-      };
+  @Query(() => User, { nullable: true })
+  async getCurrentUser(@Ctx() { req, em }: MyContext) {
+    if (!req.session.userId) {
+      return null;
     }
-    return { user };
+    const user = await em.findOne(User, { id: req.session.userId });
+    return user;
   }
 }

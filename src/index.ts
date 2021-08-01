@@ -12,7 +12,10 @@ import { MyContext } from "./types";
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
-
+import {
+  ApolloServerPluginLandingPageGraphQLPlayground,
+  PluginDefinition,
+} from "apollo-server-core";
 const main = async () => {
   const orm = await MikroORM.init(mikroConfig);
   await orm.getMigrator().up();
@@ -24,16 +27,19 @@ const main = async () => {
 
   app.use(
     session({
-      name: "myCookie",
-      store: new RedisStore({ client: redisClient, disableTouch: true }),
+      name: "cookiename",
+      store: new RedisStore({
+        client: redisClient,
+        disableTouch: true,
+      }),
       cookie: {
-        httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 7,
+        httpOnly: true,
+        sameSite: "lax", // csrf
         secure: __prod__,
-        sameSite: "none", // or none
       },
       saveUninitialized: false,
-      secret: "secret",
+      secret: "qowiueojwojfalksdjoqiwueo",
       resave: false,
     })
   );
@@ -44,15 +50,16 @@ const main = async () => {
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
   await apolloServer.start();
   apolloServer.applyMiddleware({
     app,
-    cors: {
-      credentials: true,
-      origin: "https://studio.apollographql.com",
-    },
+    // cors: {
+    //   credentials: true,
+    //   origin: "https://studio.apollographql.com",
+    // },
   });
 
   app.listen(4000, () => {
