@@ -12,10 +12,7 @@ import { MyContext } from "./types";
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
-import {
-  ApolloServerPluginLandingPageGraphQLPlayground,
-  PluginDefinition,
-} from "apollo-server-core";
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 const main = async () => {
   const orm = await MikroORM.init(mikroConfig);
   await orm.getMigrator().up();
