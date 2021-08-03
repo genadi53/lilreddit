@@ -3,6 +3,7 @@ import {
   CurrentUserDocument,
   CurrentUserQuery,
   LoginMutation,
+  LogoutMutation,
   RegisterMutation,
 } from "../generated/graphql";
 
@@ -46,5 +47,14 @@ export const registerUpdate = (_result: any, args, cache: Cache, info) => {
         };
       }
     }
+  );
+};
+
+export const logoutUpdate = (_result: any, args, cache: Cache, info) => {
+  betterUpdateQuery<LogoutMutation, CurrentUserQuery>(
+    cache,
+    { query: CurrentUserDocument },
+    _result,
+    () => ({ getCurrentUser: null })
   );
 };

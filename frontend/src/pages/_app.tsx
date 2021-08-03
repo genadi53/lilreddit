@@ -3,7 +3,11 @@ import { Provider, createClient, dedupExchange, fetchExchange } from "urql";
 import { cacheExchange } from "@urql/exchange-graphcache";
 
 import theme from "../theme";
-import { loginUpdate, registerUpdate } from "../utills/mutationUpdates";
+import {
+  loginUpdate,
+  logoutUpdate,
+  registerUpdate,
+} from "../utills/mutationUpdates";
 
 const client = createClient({
   url: "http://localhost:4000/graphql",
@@ -16,7 +20,8 @@ const client = createClient({
       updates: {
         Mutation: {
           login: loginUpdate,
-          register: registerUpdate, //2555624
+          register: registerUpdate,
+          logout: logoutUpdate, //2555624
         },
       },
     }),
