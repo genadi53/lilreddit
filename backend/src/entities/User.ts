@@ -12,6 +12,10 @@ export class User {
   @Property({ type: "text", unique: true })
   username!: string;
 
+  @Field()
+  @Property({ type: "text", unique: true })
+  email!: string;
+
   // no field prop - it will not show on query
   @Property({ type: "text" })
   password!: string;
