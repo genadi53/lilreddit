@@ -1,4 +1,4 @@
-import { cacheExchange, QueryInput, Cache } from "@urql/exchange-graphcache";
+import { Cache } from "@urql/exchange-graphcache";
 import {
   CurrentUserDocument,
   CurrentUserQuery,
@@ -6,15 +6,7 @@ import {
   LogoutMutation,
   RegisterMutation,
 } from "../generated/graphql";
-
-function betterUpdateQuery<Result, Query>(
-  cache: Cache,
-  qi: QueryInput,
-  result: any,
-  fn: (r: Result, q: Query) => Query
-) {
-  return cache.updateQuery(qi, (data) => fn(result, data as any) as any);
-}
+import { betterUpdateQuery } from "./betterUpdateQuery";
 
 export const loginUpdate = (_result: any, args, cache: Cache, info) => {
   betterUpdateQuery<LoginMutation, CurrentUserQuery>(
