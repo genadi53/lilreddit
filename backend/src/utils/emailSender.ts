@@ -17,17 +17,17 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
     });
 
   // Gmail
-  const gmailTransport: nodemailer.Transporter<SMTPTransport.SentMessageInfo> =
-    nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "kotka5353@gmail.com",
-        pass: process.env.GMAIL_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
+  // const gmailTransport: nodemailer.Transporter<SMTPTransport.SentMessageInfo> =
+  //   nodemailer.createTransport({
+  //     service: "gmail",
+  //     auth: {
+  //       user: "kotka5353@gmail.com",
+  //       pass: process.env.GMAIL_PASS,
+  //     },
+  //     tls: {
+  //       rejectUnauthorized: false,
+  //     },
+  //   });
 
   const mainOptions = {
     from: "kotka5353@mail.com",
@@ -36,7 +36,7 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
     html,
   };
 
-  await transport.sendMail(mainOptions, , function (err, success) {
+  await transport.sendMail(mainOptions, function (err) {
     if (err) {
       console.log(err);
       throw err;

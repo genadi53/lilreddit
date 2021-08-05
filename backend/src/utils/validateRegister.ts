@@ -40,7 +40,6 @@ export const validateRegister = (options: UsernamePasswordInput) => {
 };
 
 export const registerErrors = (err) => {
-  console.log(err);
   if (err.code === "23505") {
     if (err.detail.includes("email")) {
       return {
