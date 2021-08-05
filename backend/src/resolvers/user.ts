@@ -47,7 +47,7 @@ export class UserResolver {
       "ex",
       1000 * 60 * 60 * 24 * 3
     );
-    const mailBody = `<a href=http://localhost:3000/change-password/${token}">Reset Password</a>`;
+    const mailBody = `<a href=http://localhost:3000/change-password/${token}>Reset Password</a>`;
     await sendEmail(user.email, "Forgot Password", mailBody);
     return true;
   }
@@ -69,7 +69,8 @@ export class UserResolver {
       };
     }
 
-    const userId = await redis.get(FORGET_PASSWORD_PREFIX + token);
+    const key = FORGET_PASSWORD_PREFIX + token;
+    const userId = await redis.get(key);
     if (!userId) {
       return {
         errors: [
@@ -95,6 +96,7 @@ export class UserResolver {
 
     user.password = await argon2.hash(newPassword);
     em.persistAndFlush(user);
+    await redis.del(key);
 
     // log in after change pass
     req.session.userId = user.id;
