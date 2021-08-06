@@ -22,7 +22,9 @@ const Login: React.FC<{}> = ({}) => {
           if (responce.data?.login.errors) {
             setErrors(toErrorMap(responce.data.login.errors));
           } else if (responce.data?.login.user) {
-            router.push("/");
+            const nextLocation =
+              typeof router.query.next === "string" ? router.query.next : "/";
+            router.push(nextLocation);
           }
         }}
       >

@@ -32,7 +32,7 @@ export const Navbar: React.FC<navbarProps> = ({}) => {
       </>
     );
   } else {
-    console.log(data.getCurrentUser.username);
+    // console.log(data.getCurrentUser.username);
     body = (
       <Flex ml={"auto"}>
         <Box mr={2}>{data.getCurrentUser.username}</Box>
@@ -48,7 +48,7 @@ export const Navbar: React.FC<navbarProps> = ({}) => {
   }
 
   return (
-    <Flex bg="tan" p={4}>
+    <Flex position="sticky" top={0} zIndex={1} bg="tan" p={4}>
       {body}
     </Flex>
   );

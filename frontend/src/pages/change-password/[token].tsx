@@ -22,7 +22,7 @@ const ChangePassword: NextComponentType<
   {}
 > =
   //NextPage<{ token: string }> =
-  ({ token }) => {
+  () => {
     const router = useRouter();
     const [, changePassword] = useChangePasswordMutation();
     const [tokenError, setTokenError] = useState("");
@@ -34,7 +34,10 @@ const ChangePassword: NextComponentType<
           onSubmit={async (values, { setErrors }) => {
             const responce = await changePassword({
               newPassword: values.newPassword,
-              token,
+              token:
+                typeof router.query.token === "string"
+                  ? router.query.token
+                  : "",
             });
             if (responce.data?.changePassword.errors) {
               const errorMap = toErrorMap(responce.data?.changePassword.errors);
@@ -81,11 +84,5 @@ const ChangePassword: NextComponentType<
       </Wrapper>
     );
   };
-
-ChangePassword.getInitialProps = ({ query }) => {
-  return {
-    token: query.token as string,
-  };
-};
 
 export default withUrqlClient(CreateUrqlClient)(ChangePassword);
