@@ -13,7 +13,7 @@ export const Navbar: React.FC<navbarProps> = ({}) => {
   const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
   let body = null;
 
-  if (fetching) {
+  if (isServer() || fetching) {
   } else if (!data?.getCurrentUser) {
     body = (
       <>
