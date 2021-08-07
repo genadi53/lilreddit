@@ -24,11 +24,13 @@ const main = async () => {
     password: "123456789",
     logging: true,
     synchronize: true,
-    migrations: [path.join(__dirname, "./migraions/*")],
+    migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User],
   });
 
+  // await Post.delete({});
   // (await connection).runMigrations({ transaction: "all" });
+
   const app = express();
 
   const RedisStore = connectRedis(session);
