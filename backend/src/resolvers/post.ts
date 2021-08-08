@@ -4,6 +4,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  Info,
   InputType,
   Int,
   Mutation,
@@ -46,6 +47,7 @@ export class PostResolver {
   async posts(
     @Arg("limit", () => Int) limit: number,
     @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+    // @Info() info: any
   ): Promise<PaginatedPosts> {
     //return Post.find();
     const realLimit = Math.min(50, limit);
@@ -53,14 +55,34 @@ export class PostResolver {
     const qb = getConnection()
       .getRepository(Post)
       .createQueryBuilder("post")
-      .orderBy('"createdAt"', "DESC")
-      .take(realLimitPlusOne);
+      .innerJoinAndSelect("post.creator", "user", 'user.id = post."creatorId"')
+      .orderBy('post."createdAt"', "DESC"); //
+    // .take(realLimitPlusOne);
 
     if (cursor) {
-      qb.where('"createdAt" < :cursor', { cursor: new Date(parseInt(cursor)) });
+      qb.where('post."createdAt" < :cursor', {
+        cursor: new Date(parseInt(cursor)),
+      });
     }
 
+    qb.limit(realLimitPlusOne);
+
     const posts = await qb.getMany();
+
+    // const replacements: any[] = [reaLimitPlusOne];
+    // if (cursor) {
+    //   replacements.push(new Date(parseInt(cursor)));
+    // }
+    // const posts = await getConnection().query(
+    //   `
+    // select p.*
+    // from post p
+    // ${cursor ? `where p."createdAt" < $2` : ""}
+    // order by p."createdAt" DESC
+    // limit $1
+    // `,
+    //   replacements
+    // );
 
     return {
       posts: posts.slice(0, realLimit),
