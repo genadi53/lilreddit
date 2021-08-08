@@ -129,7 +129,7 @@ export class UserResolver {
     const hasedPassword = await argon2.hash(options.password);
     let user;
     try {
-      // const user = User.create({
+      // user = await User.create({
       //   username: options.username,
       //   email: options.email,
       //   password: hasedPassword,
@@ -153,6 +153,7 @@ export class UserResolver {
       }
     }
     // log in after register
+    //if (user) req.session.userId = user.id;
     req.session.userId = user.id;
     return { user };
   }

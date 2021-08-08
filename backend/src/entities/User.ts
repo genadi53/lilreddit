@@ -1,6 +1,6 @@
 // import { PrimaryKey, Entity, Property } from "@mikro-orm/core";
 import { OneToMany } from "@mikro-orm/core";
-import { Field, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 import {
   Entity,
   Column,
@@ -10,11 +10,12 @@ import {
   BaseEntity,
 } from "typeorm";
 import { Post } from "./Post";
+import { Upvote } from "./Upvote";
 
 @ObjectType()
 @Entity()
 export class User extends BaseEntity {
-  @Field()
+  @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -32,6 +33,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Post, (post) => post.creator)
   posts: Post[];
+
+  @OneToMany(() => Upvote, (upvote) => upvote.user)
+  upvotes: Upvote[];
 
   @Field(() => String)
   @CreateDateColumn()
