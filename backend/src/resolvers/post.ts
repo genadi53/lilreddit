@@ -17,6 +17,7 @@ import {
 import { MyContext } from "src/types";
 import { isAuth } from "../middleware/isAuth";
 import { getConnection } from "typeorm";
+import { Upvote } from "../entities/Upvote";
 
 @InputType()
 class PostInput {
@@ -46,43 +47,66 @@ export class PostResolver {
   @Query(() => PaginatedPosts)
   async posts(
     @Arg("limit", () => Int) limit: number,
-    @Arg("cursor", () => String, { nullable: true }) cursor: string | null
-    // @Info() info: any
-  ): Promise<PaginatedPosts> {
+    @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
+    @Ctx() { req }: MyContext
+  ): // @Info() info: any
+  Promise<PaginatedPosts> {
     //return Post.find();
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = realLimit + 1;
-    const qb = getConnection()
-      .getRepository(Post)
-      .createQueryBuilder("post")
-      .innerJoinAndSelect("post.creator", "user", 'user.id = post."creatorId"')
-      .orderBy('post."createdAt"', "DESC"); //
-    // .take(realLimitPlusOne);
+
+    const replacements: any[] = [realLimitPlusOne];
 
     if (cursor) {
-      qb.where('post."createdAt" < :cursor', {
-        cursor: new Date(parseInt(cursor)),
-      });
+      replacements.push(new Date(parseInt(cursor)));
     }
 
-    qb.limit(realLimitPlusOne);
-
-    const posts = await qb.getMany();
-
-    // const replacements: any[] = [reaLimitPlusOne];
-    // if (cursor) {
-    //   replacements.push(new Date(parseInt(cursor)));
+    const posts = await getConnection().query(
+      `
+    select p.*,
+    json_build_object(
+      'id', u.id,
+      'username', u.username,
+      'email', u.email,
+      'createdAt', u."createdAt",
+      'updatedAt', u."updatedAt"
+      ) creator,
+    ${
+      req.session.userId
+        ? `(select value from upvote where "userId" = ${req.session.userId} and "postId" = p.id) "voteStatus"`
+        : 'null as "voteStatus"'
+    }
+    from post p
+    inner join public.user u on u.id = p."creatorId"
+    ${cursor ? `where p."createdAt" < $2` : ""}
+    order by p."createdAt" DESC
+    limit $1
+    `,
+      replacements
+    );
+    // const qb = getConnection()
+    //   .getRepository(Post)
+    //   .createQueryBuilder("post")
+    //   .innerJoinAndSelect("post.creator", "user", 'user.id = post."creatorId"');
+    // if (req.session.userId) {
+    //   qb.innerJoinAndSelect(
+    //     "post.upvotes",
+    //     "upvotes",
+    //     `upvotes."postId" = post.id and upvotes."userId" = ${req.session.userId}`
+    //   );
     // }
-    // const posts = await getConnection().query(
-    //   `
-    // select p.*
-    // from post p
-    // ${cursor ? `where p."createdAt" < $2` : ""}
-    // order by p."createdAt" DESC
-    // limit $1
-    // `,
-    //   replacements
-    // );
+    // qb.orderBy('post."createdAt"', "DESC"); //
+    // // .take(realLimitPlusOne);
+    // if (cursor) {
+    //   qb.where('post."createdAt" < :cursor', {
+    //     cursor: new Date(parseInt(cursor)),
+    //   });
+    // }
+    // qb.limit(realLimitPlusOne);
+    // const posts = await qb.getMany();
+
+    console.log("*****************************");
+    posts.forEach((p) => console.log(p));
 
     return {
       posts: posts.slice(0, realLimit),

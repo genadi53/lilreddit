@@ -73,7 +73,7 @@ export const voteUpdate = (_result: any, args, cache: Cache, info) => {
     `,
     { id: postId } as any
   );
-  console.log(data);
+  // console.log(data);
   if (data) {
     const newPoints = (data.points as number) + value;
     cache.writeFragment(
