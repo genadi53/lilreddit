@@ -3,7 +3,13 @@ import Router from "next/router";
 import { dedupExchange, Exchange, fetchExchange } from "urql";
 import { pipe, tap } from "wonka";
 import { cursorPagination } from "./cursorPagination";
-import { loginUpdate, logoutUpdate, registerUpdate } from "./mutationUpdates";
+import {
+  createPostUpdate,
+  loginUpdate,
+  logoutUpdate,
+  registerUpdate,
+  voteUpdate,
+} from "./mutationUpdates";
 
 export const errorExchange: Exchange =
   ({ forward }) =>
@@ -41,6 +47,8 @@ export const CreateUrqlClient = (ssrExchange: any) => ({
           login: loginUpdate,
           register: registerUpdate,
           logout: logoutUpdate,
+          createPost: createPostUpdate,
+          vote: voteUpdate,
         },
       },
     }),
