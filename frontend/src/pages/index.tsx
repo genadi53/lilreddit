@@ -1,25 +1,20 @@
-import { withUrqlClient } from "next-urql";
-import { CreateUrqlClient } from "../utills/createUrqlClient";
-import {
-  useCurrentUserQuery,
-  useDeletePostMutation,
-  usePostsQuery,
-} from "../generated/graphql";
-import { Layout } from "../components/Layout";
 import {
   Box,
   Button,
   Flex,
   Heading,
-  IconButton,
   Link,
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { withUrqlClient } from "next-urql";
 import NextLink from "next/link";
 import React, { useState } from "react";
+import { EditDeleteButtons } from "../components/EditDeleteButtons";
+import { Layout } from "../components/Layout";
 import { Upvote } from "../components/Upvote";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { usePostsQuery } from "../generated/graphql";
+import { CreateUrqlClient } from "../utills/createUrqlClient";
 
 const Index = () => {
   const [variables, setVariables] = useState({
@@ -27,9 +22,7 @@ const Index = () => {
     cursor: null as null | string,
   });
 
-  const [{ data: currentUserData }] = useCurrentUserQuery();
   const [{ data, fetching }] = usePostsQuery({ variables });
-  const [, deletePost] = useDeletePostMutation();
 
   if (!fetching && !data) {
     return (
@@ -62,32 +55,7 @@ const Index = () => {
                       <Text flex={1} mt={4}>
                         {p.textSnippet}
                       </Text>
-
-                      {currentUserData?.getCurrentUser?.id !==
-                      p.creator.id ? null : (
-                        <Box>
-                          <NextLink
-                            href="/post/edit/[id]"
-                            as={`/post/edit/${p.id}`}
-                          >
-                            <IconButton
-                              as={Link}
-                              aria-label="edit-post"
-                              mr={4}
-                              icon={<EditIcon></EditIcon>}
-                            ></IconButton>
-                          </NextLink>
-
-                          <IconButton
-                            aria-label="delete-post"
-                            // backgroundColor="red"
-                            onClick={() => {
-                              deletePost({ id: p.id });
-                            }}
-                            icon={<DeleteIcon></DeleteIcon>}
-                          ></IconButton>
-                        </Box>
-                      )}
+                      <EditDeleteButtons id={p.id} creatorId={p.creator.id} />
                     </Flex>
                   </Box>
                 </Flex>
