@@ -6,6 +6,7 @@ import { cursorPagination } from "./cursorPagination";
 import { isServer } from "./isServer";
 import {
   createPostUpdate,
+  deletePostUpdate,
   loginUpdate,
   logoutUpdate,
   registerUpdate,
@@ -30,7 +31,7 @@ export const errorExchange: Exchange =
 export const CreateUrqlClient = (ssrExchange: any, ctx: any) => {
   let cookie = "";
   if (isServer()) {
-    cookie = ctx.req.headers.cookie;
+    cookie = ctx?.req?.headers.cookie;
   }
   return {
     url: "http://localhost:4000/graphql",
@@ -60,6 +61,7 @@ export const CreateUrqlClient = (ssrExchange: any, ctx: any) => {
             logout: logoutUpdate,
             createPost: createPostUpdate,
             vote: voteUpdate,
+            deletePost: deletePostUpdate,
           },
         },
       }),

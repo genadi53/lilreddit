@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import {
   CurrentUserDocument,
   CurrentUserQuery,
+  DeletePostMutationVariables,
   LoginMutation,
   LogoutMutation,
   RegisterMutation,
@@ -74,7 +75,7 @@ export const voteUpdate = (_result: any, args, cache: Cache, info) => {
     `,
     { id: postId } as any
   );
-  console.log(data);
+  // console.log(data);
   if (data) {
     if (data.voteStatus === value) return;
     const newPoints =
@@ -90,4 +91,11 @@ export const voteUpdate = (_result: any, args, cache: Cache, info) => {
       { id: postId, points: newPoints, voteStatus: value } as any
     );
   }
+};
+
+export const deletePostUpdate = (_result: any, args, cache: Cache, info) => {
+  cache.invalidate({
+    __typename: "Post",
+    id: (args as DeletePostMutationVariables).id,
+  });
 };
