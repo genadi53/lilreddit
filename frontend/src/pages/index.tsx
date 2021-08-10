@@ -7,7 +7,6 @@ import {
   Button,
   Flex,
   Heading,
-  IconButton,
   Link,
   Stack,
   Text,
@@ -18,7 +17,7 @@ import { Upvote } from "../components/Upvote";
 
 const Index = () => {
   const [variables, setVariables] = useState({
-    limit: 15,
+    limit: 5,
     cursor: null as null | string,
   });
   const [{ data, fetching }] = usePostsQuery({ variables });
@@ -27,8 +26,6 @@ const Index = () => {
     return (
       <>
         <div>No posts to show</div>
-        <div>{JSON.stringify(!fetching)}</div>
-        <div>{JSON.stringify(data)}</div>
       </>
     );
   }

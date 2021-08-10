@@ -69,21 +69,25 @@ export const voteUpdate = (_result: any, args, cache: Cache, info) => {
       fragment _ on Post {
         id
         points
+        voteStatus
       }
     `,
     { id: postId } as any
   );
-  // console.log(data);
+  console.log(data);
   if (data) {
-    const newPoints = (data.points as number) + value;
+    if (data.voteStatus === value) return;
+    const newPoints =
+      (data.points as number) + (!data.voteStatus ? 1 : 2) * value;
     cache.writeFragment(
       gql`
         fragment _ on Post {
           id
           points
+          voteStatus
         }
       `,
-      { id: postId, points: newPoints } as any
+      { id: postId, points: newPoints, voteStatus: value } as any
     );
   }
 };

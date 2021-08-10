@@ -3,6 +3,7 @@ import Router from "next/router";
 import { dedupExchange, Exchange, fetchExchange } from "urql";
 import { pipe, tap } from "wonka";
 import { cursorPagination } from "./cursorPagination";
+import { isServer } from "./isServer";
 import {
   createPostUpdate,
   loginUpdate,
@@ -26,34 +27,45 @@ export const errorExchange: Exchange =
     );
   };
 
-export const CreateUrqlClient = (ssrExchange: any) => ({
-  url: "http://localhost:4000/graphql",
-  fetchOptions: {
-    credentials: "include" as const,
-  },
-  exchanges: [
-    dedupExchange,
-    cacheExchange({
-      keys: {
-        PaginatedPosts: () => null,
-      },
-      resolvers: {
-        Query: {
-          posts: cursorPagination(),
+export const CreateUrqlClient = (ssrExchange: any, ctx: any) => {
+  let cookie = "";
+  if (isServer()) {
+    cookie = ctx.req.headers.cookie;
+  }
+  return {
+    url: "http://localhost:4000/graphql",
+    fetchOptions: {
+      credentials: "include" as const,
+      headers: cookie
+        ? {
+            cookie,
+          }
+        : undefined,
+    },
+    exchanges: [
+      dedupExchange,
+      cacheExchange({
+        keys: {
+          PaginatedPosts: () => null,
         },
-      },
-      updates: {
-        Mutation: {
-          login: loginUpdate,
-          register: registerUpdate,
-          logout: logoutUpdate,
-          createPost: createPostUpdate,
-          vote: voteUpdate,
+        resolvers: {
+          Query: {
+            posts: cursorPagination(),
+          },
         },
-      },
-    }),
-    errorExchange,
-    ssrExchange,
-    fetchExchange,
-  ],
-});
+        updates: {
+          Mutation: {
+            login: loginUpdate,
+            register: registerUpdate,
+            logout: logoutUpdate,
+            createPost: createPostUpdate,
+            vote: voteUpdate,
+          },
+        },
+      }),
+      errorExchange,
+      ssrExchange,
+      fetchExchange,
+    ],
+  };
+};
