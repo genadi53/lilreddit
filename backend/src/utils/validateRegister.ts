@@ -39,7 +39,7 @@ export const validateRegister = (options: UsernamePasswordInput) => {
   return null;
 };
 
-export const registerErrors = (err) => {
+export const registerErrors = (err: any) => {
   if (err.code === "23505") {
     if (err.detail.includes("email")) {
       return {

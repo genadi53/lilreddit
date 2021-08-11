@@ -2,7 +2,7 @@ import { Resolver, Mutation, Arg, Ctx, Int, UseMiddleware } from "type-graphql";
 import { MyContext } from "src/types";
 import { isAuth } from "../middleware/isAuth";
 import { Upvote } from "../entities/Upvote";
-import { Post } from "../entities/Post";
+// import { Post } from "../entities/Post";
 import { getConnection } from "typeorm";
 
 @Resolver()
@@ -19,7 +19,7 @@ export class UpvoteResolver {
     const realValue = isUpvote ? 1 : -1;
 
     const upvote = await Upvote.findOne({ where: { postId, userId } });
-    const post = await Post.findOne(postId);
+    // const post = await Post.findOne(postId);
 
     if (upvote && upvote.value !== realValue) {
       await getConnection().transaction(async (tm) => {

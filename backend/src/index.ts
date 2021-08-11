@@ -1,5 +1,6 @@
 import "reflect-metadata";
-import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
+import "dotenv-safe/config";
+// import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
 import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
 import cors from "cors";
@@ -21,13 +22,14 @@ import { createUserLoader } from "./utils/createUserLoader";
 import { createUpvoteLoader } from "./utils/createUpvoteLoade";
 
 const main = async () => {
-  const connection = createConnection({
+  createConnection({
     type: "postgres",
-    database: "lilreddit2",
-    username: "postgres",
-    password: "123456789",
+    // database: process.env.DATABASE_NAME,
+    // username: process.env.DATABASE_USER,
+    // password: process.env.DATABASE_PASS,
+    url: process.env.DATABASE_URL,
     logging: true,
-    synchronize: true,
+    // synchronize: true,
     migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User, Upvote],
   });
@@ -38,11 +40,13 @@ const main = async () => {
   const app = express();
 
   const RedisStore = connectRedis(session);
-  const redis = new Redis();
+  const redis = new Redis(process.env.REDIS_URL);
+
+  app.set("proxy", 1);
 
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: process.env.CORS_ORIGIN,
       credentials: true,
     })
   );
@@ -61,7 +65,7 @@ const main = async () => {
         secure: __prod__,
       },
       saveUninitialized: false,
-      secret: "qowiueojwojfalksdjoqiwueo",
+      secret: process.env.SECRET,
       resave: false,
     })
   );
@@ -78,7 +82,7 @@ const main = async () => {
       userLoader: createUserLoader(),
       upvoteLoader: createUpvoteLoader(),
     }),
-    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
+    // plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
   await apolloServer.start();
@@ -87,8 +91,8 @@ const main = async () => {
     cors: false,
   });
 
-  app.listen(4000, () => {
-    console.log(`server started on port: ${4000}`);
+  app.listen(parseInt(process.env.PORT), () => {
+    console.log(`server started on port: ${process.env.PORT}`);
   });
 };
 main().catch((err) => {

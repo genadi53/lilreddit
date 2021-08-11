@@ -1,5 +1,3 @@
-// import { PrimaryKey, Entity, Property } from "@mikro-orm/core";
-import { OneToMany } from "@mikro-orm/core";
 import { Field, Int, ObjectType } from "type-graphql";
 import {
   Entity,
@@ -8,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
+  OneToMany,
 } from "typeorm";
 import { Post } from "./Post";
 import { Upvote } from "./Upvote";
