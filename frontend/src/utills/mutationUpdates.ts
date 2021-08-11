@@ -25,6 +25,7 @@ export const loginUpdate = (_result: any, args, cache: Cache, info) => {
       }
     }
   );
+  invalidateAllPosts(cache);
 };
 
 export const registerUpdate = (_result: any, args, cache: Cache, info) => {
@@ -54,13 +55,7 @@ export const logoutUpdate = (_result: any, args, cache: Cache, info) => {
 };
 
 export const createPostUpdate = (_result: any, args, cache: Cache, info) => {
-  const allFields = cache.inspectFields("Query");
-  // console.log(allFields);
-  const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
-  console.log(fieldInfos);
-  fieldInfos.forEach((info) => {
-    cache.invalidate("Query", "posts", info.arguments || {});
-  });
+  invalidateAllPosts(cache);
 };
 
 export const voteUpdate = (_result: any, args, cache: Cache, info) => {
@@ -97,5 +92,15 @@ export const deletePostUpdate = (_result: any, args, cache: Cache, info) => {
   cache.invalidate({
     __typename: "Post",
     id: (args as DeletePostMutationVariables).id,
+  });
+};
+
+export const invalidateAllPosts = (cache: Cache) => {
+  const allFields = cache.inspectFields("Query");
+  // console.log(allFields);
+  const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
+  // console.log(fieldInfos);
+  fieldInfos.forEach((info) => {
+    cache.invalidate("Query", "posts", info.arguments || {});
   });
 };

@@ -17,6 +17,8 @@ import { UserResolver } from "./resolvers/user";
 import path from "path";
 import { UpvoteResolver } from "./resolvers/upvote";
 import { Upvote } from "./entities/Upvote";
+import { createUserLoader } from "./utils/createUserLoader";
+import { createUpvoteLoader } from "./utils/createUpvoteLoade";
 
 const main = async () => {
   const connection = createConnection({
@@ -69,7 +71,13 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver, UpvoteResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({ req, res, redis }),
+    context: ({ req, res }) => ({
+      req,
+      res,
+      redis,
+      userLoader: createUserLoader(),
+      upvoteLoader: createUpvoteLoader(),
+    }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 
