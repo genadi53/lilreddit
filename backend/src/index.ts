@@ -24,17 +24,12 @@ import { createUpvoteLoader } from "./utils/createUpvoteLoade";
 const main = async () => {
   createConnection({
     type: "postgres",
-    // database: process.env.DATABASE_NAME,
-    // username: process.env.DATABASE_USER,
-    // password: process.env.DATABASE_PASS,
     url: process.env.DATABASE_URL,
     logging: true,
-    // synchronize: true,
+    synchronize: true,
     migrations: [path.join(__dirname, "./migrations/*")],
     entities: [Post, User, Upvote],
   });
-
-  // await Post.delete({});
   // (await connection).runMigrations({ transaction: "all" });
 
   const app = express();
@@ -42,7 +37,7 @@ const main = async () => {
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
 
-  app.set("proxy", 1);
+  app.set("trust proxy", 1);
 
   app.use(
     cors({

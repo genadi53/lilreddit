@@ -10,7 +10,7 @@
     "dev2": "nodemon --exec ts-node src/index.ts",
     "watch": "tsc -w",
     "build": "tsc",
-    "den-env": "npx gen-env-types .env -o src/env.d.ts -e ."
+    "gen-env": "npx gen-env-types .env -o src/env.d.ts -e ."
   },
   "keywords": [],
   "author": "",

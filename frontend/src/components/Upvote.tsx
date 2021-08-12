@@ -11,7 +11,7 @@ export const Upvote: React.FC<UpvoteProps> = ({ post }) => {
   const [loadingState, setLoading] = useState<
     "upvote-loading" | "downvote-loading" | "not-loading"
   >("not-loading");
-  const [{ fetching, operation }, vote] = useVoteMutation();
+  const [, /*{ fetching, operation },*/ vote] = useVoteMutation();
   return (
     <Flex direction="column" justifyContent="center" alignItems="center" mr={4}>
       <IconButton

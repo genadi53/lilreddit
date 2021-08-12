@@ -11,8 +11,8 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
       host: "smtp.mailtrap.io",
       port: 2525,
       auth: {
-        user: "a17975b8d293ab",
-        pass: "78023f90ad1142",
+        user: process.env.MAILTRAP_USER,
+        pass: process.env.MAILTRAP_PASS,
       },
     });
 
@@ -21,7 +21,7 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
   //   nodemailer.createTransport({
   //     service: "gmail",
   //     auth: {
-  //       user: "kotka5353@gmail.com",
+  //       user: process.env.GMAIL_USER,
   //       pass: process.env.GMAIL_PASS,
   //     },
   //     tls: {
@@ -30,7 +30,7 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
   //   });
 
   const mainOptions = {
-    from: "kotka5353@mail.com",
+    from: process.env.GMAIL_USER,
     to,
     subject,
     html,

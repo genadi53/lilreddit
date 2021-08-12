@@ -93,24 +93,15 @@ export class PostResolver {
       replacements
     );
     // const qb = getConnection()
-    //   .getRepository(Post)
-    //   .createQueryBuilder("post")
-    //   .innerJoinAndSelect("post.creator", "user", 'user.id = post."creatorId"');
-    // if (req.session.userId) {
-    //   qb.innerJoinAndSelect(
-    //     "post.upvotes",
-    //     "upvotes",
-    //     `upvotes."postId" = post.id and upvotes."userId" = ${req.session.userId}`
-    //   );
-    // }
-    // qb.orderBy('post."createdAt"', "DESC"); //
-    // // .take(realLimitPlusOne);
+    // .getRepository(Post)
+    // .createQueryBuilder("post");
+    // qb.orderBy('post."createdAt"', "DESC")
+    // .take(realLimitPlusOne); // limit
     // if (cursor) {
     //   qb.where('post."createdAt" < :cursor', {
     //     cursor: new Date(parseInt(cursor)),
     //   });
     // }
-    // qb.limit(realLimitPlusOne);
     // const posts = await qb.getMany();
 
     return {

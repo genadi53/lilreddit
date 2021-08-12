@@ -8,5 +8,9 @@ declare namespace NodeJS {
     PORT: string;
     SECRET: string;
     CORS_ORIGIN: string;
+    MAILTRAP_USER: string;
+    MAILTRAP_PASS: string;
+    GMAIL_PASS: string;
+    GMAIL_USER: string;
   }
 }
