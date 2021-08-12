@@ -3,12 +3,12 @@ import { useEffect } from "react";
 import { useCurrentUserQuery } from "../generated/graphql";
 
 export const useIsAuth = () => {
-  const [{ data, fetching }] = useCurrentUserQuery();
+  const { data, loading } = useCurrentUserQuery();
   const router = useRouter();
 
   useEffect(() => {
-    if (!fetching && !data?.getCurrentUser) {
+    if (!loading && !data?.getCurrentUser) {
       router.replace("/login?next=" + router.pathname);
     }
-  }, [fetching, data, router]);
+  }, [loading, data, router]);
 };

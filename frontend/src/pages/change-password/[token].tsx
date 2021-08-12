@@ -4,27 +4,22 @@ import { Box, Button, Flex, Link } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import { InputField } from "../../components/InputField";
 import { Wrapper } from "../../components/Wrapper";
-import { useChangePasswordMutation } from "../../generated/graphql";
+import {
+  CurrentUserDocument,
+  CurrentUserQuery,
+  useChangePasswordMutation,
+} from "../../generated/graphql";
 import { toErrorMap } from "../../utills/toErrorMap";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import {
-  NextComponentType,
-  PartialNextContext,
-  withUrqlClient,
-} from "next-urql";
-import { CreateUrqlClient } from "../../utills/createUrqlClient";
 import NextLink from "next/link";
+import { withApollo } from "../../utills/withApollo";
 
-const ChangePassword: NextComponentType<
-  PartialNextContext,
-  { token: string },
-  {}
-> =
+const ChangePassword =
   //NextPage<{ token: string }> =
   () => {
     const router = useRouter();
-    const [, changePassword] = useChangePasswordMutation();
+    const [changePassword] = useChangePasswordMutation();
     const [tokenError, setTokenError] = useState("");
 
     return (
@@ -32,20 +27,32 @@ const ChangePassword: NextComponentType<
         <Formik
           initialValues={{ newPassword: "" }}
           onSubmit={async (values, { setErrors }) => {
-            const responce = await changePassword({
-              newPassword: values.newPassword,
-              token:
-                typeof router.query.token === "string"
-                  ? router.query.token
-                  : "",
+            const response = await changePassword({
+              variables: {
+                newPassword: values.newPassword,
+                token:
+                  typeof router.query.token === "string"
+                    ? router.query.token
+                    : "",
+              },
+              update: (cache, { data }) => {
+                cache.writeQuery<CurrentUserQuery>({
+                  query: CurrentUserDocument,
+                  data: {
+                    __typename: "Query",
+                    getCurrentUser: data?.changePassword.user,
+                  },
+                });
+                cache.evict({ fieldName: "posts:{}" });
+              },
             });
-            if (responce.data?.changePassword.errors) {
-              const errorMap = toErrorMap(responce.data?.changePassword.errors);
+            if (response.data?.changePassword.errors) {
+              const errorMap = toErrorMap(response.data?.changePassword.errors);
               if ("token" in errorMap) {
                 setTokenError(errorMap.token);
               }
               setErrors(errorMap);
-            } else if (responce.data?.changePassword.user) {
+            } else if (response.data?.changePassword.user) {
               router.push("/");
             }
           }}
@@ -85,4 +92,4 @@ const ChangePassword: NextComponentType<
     );
   };
 
-export default withUrqlClient(CreateUrqlClient)(ChangePassword);
+export default withApollo({ ssr: false })(ChangePassword);

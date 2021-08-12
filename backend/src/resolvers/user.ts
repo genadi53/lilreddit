@@ -147,9 +147,9 @@ export class UserResolver {
         .execute();
       user = result.raw[0];
     } catch (err) {
-      const responce = registerErrors(err);
-      if (responce) {
-        return responce;
+      const response = registerErrors(err);
+      if (response) {
+        return response;
       }
     }
     // log in after register

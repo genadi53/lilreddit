@@ -3,25 +3,40 @@ import { Formik, Form } from "formik";
 import { Box, Button, Flex, Link } from "@chakra-ui/react";
 import { Wrapper } from "../components/Wrapper";
 import { InputField } from "../components/InputField";
-import { useLoginMutation } from "../generated/graphql";
+import {
+  CurrentUserQuery,
+  useLoginMutation,
+  CurrentUserDocument,
+} from "../generated/graphql";
 import { toErrorMap } from "../utills/toErrorMap";
 import { useRouter } from "next/router";
-import { withUrqlClient } from "next-urql";
-import { CreateUrqlClient } from "../utills/createUrqlClient";
 import NextLink from "next/link";
+import { withApollo } from "../utills/withApollo";
 
 const Login: React.FC<{}> = ({}) => {
   const router = useRouter();
-  const [, login] = useLoginMutation(); //useMutation(``)
+  const [login] = useLoginMutation(); //useMutation(``)
   return (
     <Wrapper variant="small">
       <Formik
         initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
-          const responce = await login(values);
-          if (responce.data?.login.errors) {
-            setErrors(toErrorMap(responce.data.login.errors));
-          } else if (responce.data?.login.user) {
+          const response = await login({
+            variables: values,
+            update: (cache, { data }) => {
+              cache.writeQuery<CurrentUserQuery>({
+                query: CurrentUserDocument,
+                data: {
+                  __typename: "Query",
+                  getCurrentUser: data?.login.user,
+                },
+              });
+              cache.evict({ fieldName: "posts:{}" });
+            },
+          });
+          if (response.data?.login.errors) {
+            setErrors(toErrorMap(response.data.login.errors));
+          } else if (response.data?.login.user) {
             const nextLocation =
               typeof router.query.next === "string" ? router.query.next : "/";
             router.push(nextLocation);
@@ -64,4 +79,4 @@ const Login: React.FC<{}> = ({}) => {
   );
 };
 
-export default withUrqlClient(CreateUrqlClient)(Login);
+export default withApollo({ ssr: true })(Login);
